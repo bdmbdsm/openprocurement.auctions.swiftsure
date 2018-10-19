@@ -34,6 +34,7 @@ from openprocurement.auctions.core.models.schema import (
     LokiItem,
     Lot,
     Period,
+    RelatedProcess,
     calc_auction_end_time,
     dgfComplaint as Complaint,
     get_auction,
@@ -191,6 +192,7 @@ class SwiftsureAuction(BaseAuction):
     auctionParameters = ModelType(AuctionParameters)
     minNumberOfQualifiedBids = IntType(choices=[1], default=1)
     procuringEntity = ModelType(SwiftsureProcuringEntity, required=True)
+    relatedProcesses = ListType(ModelType(RelatedProcess), default=list(), max_size=1)
     contractTerms = ModelType(
         ContractTerms,
         validators=[validate_contract_type])
@@ -200,6 +202,12 @@ class SwiftsureAuction(BaseAuction):
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_auction'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_auction_award'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_auction_documents'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'create_related_process'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_related_process'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'delete_related_process'),
+            (Allow, 'g:concierge', 'create_related_process'),
+            (Allow, 'g:concierge', 'edit_related_process'),
+            (Allow, 'g:concierge', 'delete_related_process'),
         ]
 
     def get_role(self):

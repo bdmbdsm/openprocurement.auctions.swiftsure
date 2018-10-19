@@ -2,6 +2,8 @@ import logging
 
 from pyramid.interfaces import IRequest
 from openprocurement.auctions.core.interfaces import IAuctionManager
+from openprocurement.auctions.core.utils import add_related_processes_views
+from openprocurement.auctions.core.traversal import factory
 from openprocurement.auctions.swiftsure.models import (
     ISwiftsureAuction,
     SwiftsureAuction,
@@ -62,3 +64,6 @@ def includeme(config, plugin_config=None):
         config.registry.accreditation['auction'][SwiftsureAuction._internal_type] = DEFAULT_LEVEL_OF_ACCREDITATION
     else:
         config.registry.accreditation['auction'][SwiftsureAuction._internal_type] = plugin_config['accreditation']
+
+    # add related processes views
+    add_related_processes_views(config, '/auctions/{auction_id}', factory)

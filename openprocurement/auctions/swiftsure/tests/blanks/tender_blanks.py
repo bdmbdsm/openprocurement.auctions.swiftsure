@@ -45,6 +45,7 @@ def create_role(self):
                   'registrationFee',
                   'bankAccount',
                   'auctionParameters',
+                  'relatedProcesses',
                   u'minNumberOfQualifiedBids'])
     if SANDBOX_MODE:
         fields.add('procurementMethodDetails')
