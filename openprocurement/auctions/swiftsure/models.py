@@ -34,6 +34,7 @@ from openprocurement.auctions.core.models.schema import (
     LokiItem,
     Lot,
     Period,
+    RelatedProcess,
     calc_auction_end_time,
     dgfComplaint as Complaint,
     get_auction,
@@ -158,7 +159,7 @@ class SwiftsureAuction(BaseAuction):
     cancellations = ListType(ModelType(swiftsureCancellation), default=list())
     complaints = ListType(ComplaintModelType(Complaint), default=list())
     contracts = ListType(ModelType(Contract), default=list())
-    merchandisingObject = MD5Type()
+    relatedProcesses = ListType(ModelType(RelatedProcess), default=list(), max_size=1)
     # All documents and attachments related to the auction.
     documents = ListType(ModelType(swiftsureDocument), default=list())
     # The period during which enquiries may be made and will be answered.
