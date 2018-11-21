@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from openprocurement.auctions.core.adapters import (
     AuctionConfigurator,
-    AuctionManagerAdapter
+    AuctionManagerAdapter,
+    Manager,
 )
 from openprocurement.auctions.core.plugins.awarding.v3_1.adapters import (
     AwardingV3_1ConfiguratorMixin
@@ -41,3 +42,17 @@ class AuctionSwiftsureManagerAdapter(AuctionManagerAdapter):
 
     def change_auction(self, request):
         pass
+
+
+class SwiftsureRelatedProcessesManager(Manager):
+    def create(self, request):
+        self.context.relatedProcesses.append(request.validated['relatedProcess'])
+        return save_asset(request)
+
+    def update(self, request):
+        return apply_patch(request, src=request.context.serialize())
+
+    def delete(self, request):
+        self.context.relatedProcesses.remove(request.validated['relatedProcess'])
+        self.context.modified = False
+        return save_asset(request)
