@@ -201,6 +201,12 @@ class SwiftsureAuction(BaseAuction):
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_auction'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_auction_award'),
             (Allow, '{}_{}'.format(self.owner, self.owner_token), 'upload_auction_documents'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'create_related_process'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'edit_related_process'),
+            (Allow, '{}_{}'.format(self.owner, self.owner_token), 'delete_related_process'),
+            (Allow, 'g:concierge', 'create_related_process'),
+            (Allow, 'g:concierge', 'edit_related_process'),
+            (Allow, 'g:concierge', 'delete_related_process'),
         ]
 
     def get_role(self):

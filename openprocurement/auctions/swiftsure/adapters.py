@@ -4,6 +4,10 @@ from openprocurement.auctions.core.adapters import (
     AuctionManagerAdapter,
     Manager,
 )
+from openprocurement.auctions.core.utils import (
+    save_auction,
+    apply_patch,
+)
 from openprocurement.auctions.core.plugins.awarding.v3_1.adapters import (
     AwardingV3_1ConfiguratorMixin
 )
@@ -29,6 +33,10 @@ class AuctionSwiftsureManagerAdapter(AuctionManagerAdapter):
     )
     allow_pre_terminal_statuses = False
 
+    def __init__(self, context):
+        self.context = context
+        self.related_processes_manager = SwiftsureRelatedProcessesManager(parent=context, parent_name='context')
+
     def _create_auction(self, request):
         auction = request.validated['auction']
         for i in request.validated['json_data'].get('documents', []):
@@ -47,7 +55,7 @@ class AuctionSwiftsureManagerAdapter(AuctionManagerAdapter):
 class SwiftsureRelatedProcessesManager(Manager):
     def create(self, request):
         self.context.relatedProcesses.append(request.validated['relatedProcess'])
-        return save_asset(request)
+        return save_auction(request)
 
     def update(self, request):
         return apply_patch(request, src=request.context.serialize())
@@ -55,4 +63,4 @@ class SwiftsureRelatedProcessesManager(Manager):
     def delete(self, request):
         self.context.relatedProcesses.remove(request.validated['relatedProcess'])
         self.context.modified = False
-        return save_asset(request)
+        return save_auction(request)
