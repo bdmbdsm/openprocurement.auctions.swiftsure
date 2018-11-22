@@ -209,8 +209,12 @@ class BaseAuctionWebTest(CoreBaseAuctionWebTest):
             for i, item in enumerate(data['items']):
                 item['relatedLot'] = lots[i % len(lots)]['id']
         if self.registry:
-            data.update({'status': "draft",
-                         'merchandisingObject': uuid4().hex})
+            data.update(
+                {
+                    'status': "draft",
+                    # 'merchandisingObject': uuid4().hex
+                }
+            )
             response = self.app.post_json('/auctions', {'data': data})
             auction = response.json['data']
             self.auction_token = response.json['access']['token']
