@@ -31,6 +31,9 @@ class RelatedProcessesTestMixin(RelatedProcessesTestMixinBase):
         self.base_resource_initial_data = test_auction_data
         self.initial_related_process_data = test_related_process_data
 
+        # only concierge can edit relatedProcesses
+        self.app.authorization = ('Basic', ('concierge', ''))
+
 
 class SwiftsureAuctionRelatedProcessResourceTest(BaseAuctionWebTest, RelatedProcessesTestMixin):
     initial_status = 'active.tendering'
