@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
 from datetime import timedelta
 from openprocurement.auctions.core.plugins.contracting.v3.models import (
     Prolongation,
 )
 from openprocurement.auctions.core.utils import get_now
+from openprocurement.auctions.core.tests.fixtures.related_process import (
+    test_related_process_data,
+)
 
 PARTIAL_MOCK_CONFIG = {
     "auctions.swiftsure": {
@@ -128,3 +132,32 @@ def create_prolongation(test_case, test_case_attr):
         'Prolongation creation is wrong.'
     )
     setattr(test_case, test_case_attr, created_prolongation.id)
+
+
+def post_related_lot(test_case, auction_id, extra_data=None):
+    """Test helper for initialization of the auction's related process (lot)
+
+    :param auction_id: id of the auction to init related lot on
+    :param token: token of the auction owner
+    :param extra_data: extra fields of the RelatedProcess model that would be posted on the server
+    """
+    # save authorization value of the caller
+    outer_auth = test_case.app.authorization
+
+    # only concierge can edit relatedProcesses
+    test_case.app.authorization = ('Basic', ('concierge', ''))
+
+    rp_data = deepcopy(test_related_process_data)
+    if extra_data:
+        rp_data.update(extra_data)
+
+    resp = test_case.app.post_json(
+        '/auctions/{0}/related_processes'.format(auction_id),
+        {'data': rp_data},
+        status=201
+    )
+
+    # restore authorization value of the caller
+    test_case.app.authorization = outer_auth
+
+    return resp

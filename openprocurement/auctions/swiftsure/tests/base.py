@@ -20,7 +20,10 @@ from openprocurement.auctions.swiftsure.constants import (
     DEFAULT_PROCUREMENT_METHOD_TYPE,
 )
 
-from openprocurement.auctions.swiftsure.tests.fixtures import PARTIAL_MOCK_CONFIG
+from openprocurement.auctions.swiftsure.tests.fixtures import (
+    PARTIAL_MOCK_CONFIG,
+    post_related_lot,
+)
 
 from openprocurement.auctions.core.tests.base import MOCK_CONFIG as BASE_MOCK_CONFIG
 from openprocurement.auctions.core.utils import connection_mock_config
@@ -218,6 +221,8 @@ class BaseAuctionWebTest(CoreBaseAuctionWebTest):
             response = self.app.post_json('/auctions', {'data': data})
             auction = response.json['data']
             self.auction_token = response.json['access']['token']
+
+            post_related_lot(self, auction['id'])
 
             self.auction_transfer = response.json['access']['transfer']
             self.auction_id = auction['id']
