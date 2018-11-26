@@ -6,46 +6,53 @@ from datetime import timedelta, time
 from iso8601 import parse_date
 
 from openprocurement.auctions.core.tests.base import JSON_RENDERER_ERROR
+from openprocurement.auctions.core.tests.fixtures.related_process import (
+    test_related_process_data,
+)
 from openprocurement.auctions.core.utils import get_now, SANDBOX_MODE, TZ
 
 # AuctionTest
 
 
 def create_role(self):
-    fields = set(['awardCriteriaDetails',
-                  'awardCriteriaDetails_en',
-                  'awardCriteriaDetails_ru',
-                  'description',
-                  'description_en',
-                  'description_ru',
-                  'tenderAttempts',
-                  'features',
-                  'guarantee',
-                  'hasEnquiries',
-                  'items',
-                  'lots',
-                  'minimalStep',
-                  'mode',
-                  'procurementMethodRationale',
-                  'procurementMethodRationale_en',
-                  'procurementMethodRationale_ru',
-                  'procurementMethodType',
-                  'procuringEntity',
-                  'merchandisingObject',
-                  'submissionMethodDetails',
-                  'submissionMethodDetails_en',
-                  'submissionMethodDetails_ru',
-                  'title',
-                  'title_en',
-                  'title_ru',
-                  'value',
-                  'auctionPeriod',
-                  'status',
-                  'contractTerms',
-                  'registrationFee',
-                  'bankAccount',
-                  'auctionParameters',
-                  u'minNumberOfQualifiedBids'])
+    fields = set(
+        [
+            'auctionParameters',
+            'auctionPeriod',
+            'awardCriteriaDetails',
+            'awardCriteriaDetails_en',
+            'awardCriteriaDetails_ru',
+            'bankAccount',
+            'contractTerms',
+            'description',
+            'description_en',
+            'description_ru',
+            'features',
+            'guarantee',
+            'hasEnquiries',
+            'items',
+            'lots',
+            'minimalStep',
+            'mode',
+            'procurementMethodRationale',
+            'procurementMethodRationale_en',
+            'procurementMethodRationale_ru',
+            'procurementMethodType',
+            'procuringEntity',
+            'registrationFee',
+            'relatedProcesses',
+            'status',
+            'submissionMethodDetails',
+            'submissionMethodDetails_en',
+            'submissionMethodDetails_ru',
+            'tenderAttempts',
+            'title',
+            'title_en',
+            'title_ru',
+            'value',
+            u'minNumberOfQualifiedBids',
+        ]
+    )
     if SANDBOX_MODE:
         fields.add('procurementMethodDetails')
     self.assertEqual(set(self.auction._fields) -
@@ -654,7 +661,8 @@ def one_valid_bid_auction(self):
     data = deepcopy(self.initial_data)
     data['minNumberOfQualifiedBids'] = 1
     data['status'] = 'pending.activation'
-    data['merchandisingObject'] = uuid4().hex
+    data['relatedProcesses'] = [deepcopy(test_related_process_data)]
+    data['relatedProcesses'][0]['type'] = 'lot'
 
     response = self.app.post_json('/auctions',
                                   {"data": data})
@@ -808,7 +816,8 @@ def one_invalid_bid_auction_manual(self):
     data = deepcopy(self.initial_data)
     data['minNumberOfQualifiedBids'] = 1
     data['status'] = 'pending.activation'
-    data['merchandisingObject'] = uuid4().hex
+    data['relatedProcesses'] = [deepcopy(test_related_process_data)]
+    data['relatedProcesses'][0]['type'] = 'lot'
 
     response = self.app.post_json('/auctions',
                                   {"data": data})
@@ -895,7 +904,8 @@ def one_invalid_bid_auction_automatic(self):
     data = deepcopy(self.initial_data)
     data['minNumberOfQualifiedBids'] = 1
     data['status'] = 'pending.activation'
-    data['merchandisingObject'] = uuid4().hex
+    data['relatedProcesses'] = [deepcopy(test_related_process_data)]
+    data['relatedProcesses'][0]['type'] = 'lot'
 
     response = self.app.post_json('/auctions',
                                   {"data": data})
@@ -965,7 +975,8 @@ def first_bid_auction(self):
     # create auction
     auction_data = deepcopy(self.initial_data)
     auction_data['status'] = 'pending.activation'
-    auction_data['merchandisingObject'] = uuid4().hex
+    auction_data['relatedProcesses'] = [deepcopy(test_related_process_data)]
+    auction_data['relatedProcesses'][0]['type'] = 'lot'
 
     response = self.app.post_json('/auctions',
                                   {"data": auction_data})
@@ -1218,8 +1229,10 @@ def suspended_auction(self):
     # create auction
     auction_data = deepcopy(self.initial_data)
     auction_data['status'] = 'pending.activation'
-    auction_data['merchandisingObject'] = uuid4().hex
+    auction_data['relatedProcesses'] = [deepcopy(test_related_process_data)]
+    auction_data['relatedProcesses'][0]['type'] = 'lot'
     auction_data['suspended'] = True
+
     response = self.app.post_json('/auctions',
                                   {"data": auction_data})
     auction_id = self.auction_id = response.json['data']['id']
