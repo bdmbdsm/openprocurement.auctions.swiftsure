@@ -146,7 +146,7 @@ def post_auction_all_invalid_bids(self):
     self.assertEqual(auction["bids"][0]['status'], 'invalid')
     self.assertEqual(auction["bids"][1]['status'], 'invalid')
     self.assertEqual(auction["bids"][2]['status'], 'invalid')
-    target_status = 'unsuccessful' if auction.get('merchandisingObject') else 'unsuccessful'
+    target_status = 'unsuccessful'
     self.assertEqual(target_status, auction["status"])
 
 
