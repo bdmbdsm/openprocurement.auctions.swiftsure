@@ -62,7 +62,8 @@ from openprocurement.auctions.core.utils import (
     calculate_business_date,
     get_request_from_root,
     get_now,
-    TZ
+    TZ,
+    search_list_with_dicts,
 )
 from openprocurement.auctions.core.validation import (
     validate_disallow_dgfPlatformLegalDetails
@@ -251,8 +252,9 @@ class SwiftsureAuction(BaseAuction):
         if value.currency != u'UAH':
             raise ValidationError(u"currency should be only UAH")
 
-    def validate_merchandisingObject(self, data, merchandisingObject):
-        if data['status'] == 'pending.activation' and not merchandisingObject:
+    def validate_relatedProcesses(self, data, relatedProcesses):
+        related_lot = search_list_with_dicts(relatedProcesses, 'type', 'lot')
+        if data['status'] == 'pending.activation' and not related_lot:
             raise ValidationError(u'This field is required.')
 
     @serializable(serialize_when_none=False)
